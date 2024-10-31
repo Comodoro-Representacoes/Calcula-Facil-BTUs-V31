@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calculadora de BTUs de Ar Condicionado</title>
+  <style>
+    body { font-family: Arial, sans-serif; background-color: #f4f6f9; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+    .container { background-color: #ffffff; border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); padding: 30px; width: 100%; max-width: 400px; text-align: center; position: relative; }
+    h2 { color: #333; margin-bottom: 20px; font-size: 1.5em; }
+    label { font-size: 1em; color: #555; display: block; text-align: left; margin-bottom: 5px; }
+    input { padding: 10px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 5px; font-size: 1em; width: calc(100% - 22px); }
+    button { background-color: #3498db; color: white; border: none; border-radius: 5px; padding: 10px; font-size: 1.1em; cursor: pointer; transition: background-color 0.3s; width: 100%; }
+    button:hover { background-color: #2980b9; }
+    .result { margin-top: 20px; font-size: 1.2em; color: #333; font-weight: bold; }
+    #refazer { display: none; margin-top: 10px; background-color: #e74c3c; }
+    #refazer:hover { background-color: #c0392b; }
+    .variacoes { margin-top: 10px; font-size: 0.9em; color: #555; text-align: left; }
+    .imagem-consultar { margin-top: 20px; position: relative; }
+    .consultar-btn { background-color: #28a745; color: white; border: none; border-radius: 5px; padding: 12px; font-size: 1.2em; cursor: pointer; margin-top: 10px; }
+    .consultar-btn:hover { background-color: #218838; }
+    .imagem-consultar img { width: 100%; margin-top: 10px; }
+    /* Popup styling */
+    #popupDescritivo { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.6); justify-content: center; align-items: center; }
+    #popupContent { background-color: white; padding: 20px; width: 90%; max-width: 400px; max-height: 80%; overflow-y: auto; border-radius: 8px; text-align: left; position: relative; }
+    #popupContent h3 { margin-top: 0; }
+    #closePopup { background-color: #28a745; color: white; border: none; border-radius: 5px; padding: 8px 15px; cursor: pointer; position: absolute; top: 10px; right: 10px; }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <img src="logo.png" alt="Logo" style="width: 100%; max-width: 200px; margin-bottom: 20px;">
+  <h2>Calculadora de BTUs de Ar Condicionado</h2>
+  
+  <label for="largura">Largura do Ambiente (m):</label>
+  <input type="number" id="largura" placeholder="Ex: 5" min="0">
+
+  <label for="comprimento">Comprimento do Ambiente (m):</label>
+  <input type="number" id="comprimento" placeholder="Ex: 6" min="0">
+
+  <label for="pessoas">Número de Pessoas:</label>
+  <input type="number" id="pessoas" placeholder="Ex: 3" min="0">
+
+  <label for="televisores">Número de Televisores:</label>
+  <input type="number" id="televisores" placeholder="Ex: 2" min="0">
+
+  <label for="computadores">Número de Computadores:</label>
+  <input type="number" id="computadores" placeholder="Ex: 2" min="0">
+
+  <label for="luzes">Número de Luzes:</label>
+  <input type="number" id="luzes" placeholder="Ex: 2" min="0">
+
+  <label for="janelas">Número de Janelas:</label>
+  <input type="number" id="janelas" placeholder="Ex: 1" min="0">
+
+  <label for="outros">Número de Outros Equipamentos:</label>
+  <input type="number" id="outros" placeholder="Ex: 1" min="0">
+
+  <label for="exposicao">Exposição ao Sol:</label>
+  <select id="exposicao" style="margin: 0 5px; border: 1px solid #ddd; border-radius: 5px; padding: 10px; width: 100%;">
+    <option value="nenhuma">Nenhuma</option>
+    <option value="parcial">Parcial</option>
+    <option value="direta">Direta</option>
+  </select>
+
+  <button onclick="calcularBTUs()">Calcular BTUs</button>
+  <button id="refazer" onclick="refazerCalculo()">Refazer Cálculo</button>
+
+  <div class="result" id="resultado"></div>
+  <div class="variacoes" id="variacoes"></div>
+
+  <div class="imagem-consultar" id="imagemConsultar" style="display: none;">
+    <img src="sua-imagem-aqui.png" alt="Resultado" id="imagemResultado">
+    <button class="consultar-btn" onclick="window.location.href='https://beacons.ai/calcula_facil_btus_elgin'">Ver Modelos</button>
+  </div>
+</div>
+
+<div id="popupDescritivo" onclick="fecharPopup()">
+  <div id="popupContent" onclick="event.stopPropagation()">
+    <button id="closePopup" onclick="fecharPopup()">Fechar</button>
+    <h3>Descritivo da Calculadora</h3>
+    <p>Os valores e potências apresentados são aproximados. Nenhum teste online substitui a necessidade de consulta com um técnico profissional da área.</p>
+  </div>
+</div>
+
+<script>
+  function calcularBTUs() {
+    const largura = parseFloat(document.getElementById('largura').value) || 0;
+    const comprimento = parseFloat(document.getElementById('comprimento').value) || 0;
+    const pessoas = parseInt(document.getElementById('pessoas').value) || 0;
+    const televisores = parseInt(document.getElementById('televisores').value) || 0;
+    const computadores = parseInt(document.getElementById('computadores').value) || 0;
+    const luzes = parseInt(document.getElementById('luzes').value) || 0;
+    const janelas = parseInt(document.getElementById('janelas').value) || 0;
+    const outros = parseInt(document.getElementById('outros').value) || 0;
+    const exposicao = document.getElementById('exposicao').value;
+
+    const area = largura * comprimento;
+    let btus = area * 600;
+
+    if (exposicao === 'direta') btus *= 1.2;
+    else if (exposicao === 'parcial') btus *= 1.1;
+
+    btus += (pessoas * 1000) + (televisores * 500) + (computadores * 500) + (luzes * 500) + (janelas * 500) + (outros * 500);
+
+    document.getElementById('resultado').innerHTML = `<strong>BTUs Necessários (aproximado):</strong> ${btus} BTUs<br><strong>Modelo compatível Elgin:</strong> <strong>${getModeloCompatível(btus)} BTUs</strong>`;
+    document.getElementById('imagemConsultar').style.display = 'block';
+    document.getElementById('refazer').style.display = 'block';
+  }
+
+  function getModeloCompatível(btus) {
+    const modelos = [9000, 12000, 18000, 24000, 30000, 36000, 56000];
+    return modelos.reduce((prev, curr) => Math.abs(curr - btus) < Math.abs(prev - btus) ? curr : prev);
+  }
+
+  function abrirPopup() {
+    document.getElementById('popupDescritivo').style.display = 'flex';
+  }
+
+  function fecharPopup() {
+    document.getElementById('popupDescritivo').style.display = 'none';
+  }
+
+  function refazerCalculo() {
+    document.getElementById('largura').value = '';
+    document.getElementById('comprimento').value = '';
+    document.getElementById('pessoas').value = '';
+    document.getElementById('televisores').value = '';
+    document.getElementById('computadores').value = '';
+    document.getElementById('luzes').value = '';
+    document.getElementById('janelas').value = '';
+    document.getElementById('outros').value = '';
+    document.getElementById('exposicao').value = 'nenhuma';
+    document.getElementById('resultado').innerHTML = '';
+    document.getElementById('variacoes').innerHTML = '';
+    document.getElementById('imagemConsultar').style.display = 'none';
+    document.getElementById('refazer').style.display = 'none';
+  }
+</script>
+</body>
+</html>
+
